@@ -1,0 +1,180 @@
+session_start();
+    include_once('../config.php');  
+
+         $select = "SELECT * FROM `user` ORDER BY id DESC LIMIT 1";
+         $select_run = mysqli_query($con, $select);
+        
+        if(mysqli_num_rows($select_run) > 0){
+            
+        if($row = mysqli_fetch_assoc($select_run)){
+            if(isset($_POST['registration'])){
+           $first_associate_name = mysqli_real_escape_string($con, $_POST['associate_name']);
+           $first_phone = mysqli_real_escape_string($con, $_POST['phone']);
+           $first_dob = mysqli_real_escape_string($con, $_POST['dob']);
+           $first_pan = mysqli_real_escape_string($con, $_POST['pan']);
+           $first_account_name = mysqli_real_escape_string($con, $_POST['account_name']);
+           $first_bank_name = mysqli_real_escape_string($con, $_POST['bank_name']);
+           $first_branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
+           $first_account_number = mysqli_real_escape_string($con, $_POST['account_number']);
+           $first_confirm_account_number = mysqli_real_escape_string($con, $_POST['confirm_account_number']);
+           $first_ifsc = mysqli_real_escape_string($con, $_POST['ifsc']);
+          
+           $first_email = mysqli_real_escape_string($con, $_POST['email']);
+           $first_password = mysqli_real_escape_string($con, $_POST['password']);
+           $first_confirm_password = mysqli_real_escape_string($con, $_POST['confirm_password']);
+           $role = mysqli_real_escape_string($con, $_POST['role']);
+
+
+           $pass =password_hash($first_password, PASSWORD_BCRYPT);
+          
+                    $user_id = $row['user_id'];
+                    $getnumber = str_replace("SUMITRA", "", $user_id);
+                    $id_increase = $getnumber+1;
+                    $get_string = str_pad($id_increase, 3,0, STR_PAD_LEFT);
+                    $id= "SUMITRA".$get_string;
+
+                    if($first_account_number == $first_confirm_account_number){
+
+                        if($first_password == $first_confirm_password){
+
+
+                            $check_email ="SELECT * FROM `user` WHERE email='$first_email'";
+                            $run = mysqli_query($con, $check_email);
+
+                            if(mysqli_num_rows($run) > 0){
+                                header("location:../register.php?user_error=Email Already Register..!");
+                                exit();
+                            }else{            
+                             $insert= "INSERT INTO `user`(`user_id`, `name`,`role_as`, `email`, `password`, `phone`, `dob`, `pan`, `bank_holder_name`, `bank_name`, `branch_name`, `account_number`, `ifsc`)
+                                                     VALUES ('$id','$first_associate_name','$role', '$first_email','$pass','$first_phone','$first_dob','$first_pan','$first_account_name','$first_bank_name','$first_branch_name','$first_account_number','$first_ifsc')";
+                            $result = mysqli_query($con, $insert);
+                            if($result){
+
+                                //$toEmail = "contact@sumitragroup.com";
+                                //$toSubject = "Registration Successfully";
+                                //$headers = ['From' => $first_email, 'Reply-To' => $first_email, 'Content-type' => 'text/html; charset=utf-8'];
+
+                                // $bodyParagraphs = '
+                                // <tbody>
+                                //         <tr>
+                                //             <td align="center" style="background-color:#fff; height: 200px; display:flex;justify-content: center;
+                                //                 align-items: center; gap: 20px; border-bottom:1px solid; ;">                                     
+                                //                     <h3>Your Login Details</h3>
+                                //             </td>
+                                //         </tr>
+                                //     </tbody>
+                                //     <h2 style="text-align: left; align-items: center;">
+                                //     Name: '.$first_associate_name.' <br>
+                                //     Email : '.$first_email.' <br>
+                                //     Password : '.$first_password.'
+                                // </h2>';
+                                // $body = $bodyParagraphs;
+                                $subject = "Your Login Details";
+                                $message = 'Your Name '.$first_associate_name.' </br>  Your Email '.$first_email.' <br> Password '.$first_password.'';
+
+                                $headers = "From: sender@example.com\r\n";
+                                $headers .= "Reply-To: sender@example.com\r\n";
+                                $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
+                                
+                                if(mail($first_email, $subject, $message, $headers)){
+                                    header("location:../login.php?user_success=Registration is Success Kindly check the login details on this ". $first_email. " ");
+                                            exit();
+                                }else{
+                                    header("location:../register.php?user_error=Oops something went wrong..!");
+                                    exit();
+                            }                   
+                            }
+                        }
+                        }else{
+                            header("location:../register.php?user_error=Oops! Password Not Matched!");
+                            exit();
+                        }            
+                     }else{
+                        //$_SESSION['user_error'] ="Account Number Not Matched..!";
+                        header("location:../register.php?user_error=Oops! Account Number Not Matched..!");
+                        exit();
+                     } 
+
+                }
+           }
+        }else if(isset($_POST['registration'])){
+
+           $uid = "SUMITRA001";
+           $associate_name = mysqli_real_escape_string($con, $_POST['associate_name']);
+           $phone = mysqli_real_escape_string($con, $_POST['phone']);
+           $dob = mysqli_real_escape_string($con, $_POST['dob']);
+           $pan = mysqli_real_escape_string($con, $_POST['pan']);
+           $account_name = mysqli_real_escape_string($con, $_POST['account_name']);
+           $bank_name = mysqli_real_escape_string($con, $_POST['bank_name']);
+           $branch_name = mysqli_real_escape_string($con, $_POST['branch_name']);
+           $account_number = mysqli_real_escape_string($con, $_POST['account_number']);
+           $confirm_account_number = mysqli_real_escape_string($con, $_POST['confirm_account_number']);
+           $ifsc = mysqli_real_escape_string($con, $_POST['ifsc']);
+          
+           $email = mysqli_real_escape_string($con, $_POST['email']);
+           $password = mysqli_real_escape_string($con, $_POST['password']);
+           $confirm_password = mysqli_real_escape_string($con, $_POST['confirm_password']);
+
+           $has_pass = password_hash($password, PASSWORD_BCRYPT);
+        //    if(empty($associate_name)){
+        //     header("location:../registration.php?user_error=Associate Name is empty!");
+        //    }
+
+         if($account_number == $confirm_account_number){
+
+            if($password == $confirm_password){
+
+                $insert_first = "INSERT INTO `user`(`user_id`, `name`, `email`, `password`, `phone`, `dob`, `pan`, `bank_holder_name`, `bank_name`, `branch_name`, `account_number`, `ifsc`)
+                                         VALUES ('$uid','$associate_name','$email','$has_pass','$phone','$dob','$pan','$account_name','$bank_name','$branch_name','$account_number','$ifsc')";
+                $res = mysqli_query($con, $insert_first);
+                if($res){
+
+                    // $toEmail = "contact@sumitragroup.com";
+                    // $toSubject = "Registration Successfully";
+                    // $headers = ['From' => $email, 'Reply-To' => $email, 'Content-type' => 'text/html; charset=utf-8'];
+
+                    // $bodyParagraphs = '
+                    //             <tbody>
+                    //                     <tr>
+                    //                         <td align="center" style="background-color:#fff; height: 200px; display:flex;justify-content: center;
+                    //                             align-items: center; gap: 20px; border-bottom:1px solid; ;">                                     
+                    //                                 <h3>Your Login Details</h3>
+                    //                         </td>
+                    //                     </tr>
+                    //                 </tbody>
+                    //                 <h2 style="text-align: left; align-items: center;">
+                    //                 Name: '.$associate_name.' <br>
+                    //                 Email : '.$email.' <br>
+                    //                 Password : '.$password.'                         
+                                    
+                    //             </h2>';
+                    //             $body = $bodyParagraphs;
+                                $toSubject = "Your Login Details";
+                                $messages = 'Your Name '.$associate_name.' </br>  Your Email  '.$email.' <br> Password '.$password.' ';
+
+                                $header = "From: sender@example.com\r\n";
+                                $header .= "Reply-To: sender@example.com\r\n";
+                                $header .= "Content-Type: text/plain; charset=UTF-8\r\n";
+
+                                if(mail($email, $toSubject, $messages, $header)){
+                                    header("location:../login.php?user_success=Registration is Success Kindly check the login details on this '.$email.'");
+                                            exit();
+                                }else{
+                                    header("location:../register.php?user_error=Oops something went wrong..!");
+                                    exit();
+                            }
+
+                   
+                }
+            }else{
+                header("location:../register.php?user_error=Oops! Password Not Matched!");
+                exit();
+            }
+
+         }else{
+            //$_SESSION['user_error'] ="Account Number Not Matched..!";
+            header("location:../register.php?user_error=Oops! Account Number Not Matched..!");
+            exit();
+         }  
+    }
+    
